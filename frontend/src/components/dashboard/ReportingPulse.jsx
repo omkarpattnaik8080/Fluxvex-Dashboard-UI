@@ -1,39 +1,43 @@
 import { Link } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
 import { WidgetCard } from "@/components/common/WidgetCard";
-import { DeltaChip } from "@/components/dashboard/DeltaChip";
+import { AnimatedNumber, TrendPill } from "@/components/common/DataViz";
+import { formatNumber } from "@/lib/format";
 import { TONES } from "@/lib/tones";
 
 /**
- * Reporting Pulse — mirrors the "Gross Volume" card: big headline value,
- * then clickable rows with hatched progress bars (design.md §5.5).
+ * Reporting Pulse — big headline value with trend pill, then clickable rows
+ * with animated rounded progress bars (reference "SS24 progress" card).
  */
-export const ReportingPulse = ({ data, rangeLabel }) => (
-  <WidgetCard testId="reporting-pulse" title="Reporting Pulse" subtitle={`Report delivery · ${rangeLabel}`}>
-    <div className="flex items-end gap-3">
-      <span className="fx-num text-[44px] font-semibold leading-none tracking-[-0.02em]" data-testid="pulse-sent-value">{data.sent}</span>
-      <span className="mb-1 text-[13px] fx-muted">reports sent</span>
-      <DeltaChip value={data.sentDelta} className="mb-1" testId="pulse-sent-delta" />
+export const ReportingPulse = ({ data, rangeLabel, delay }) => (
+  <WidgetCard testId="reporting-pulse" title="Reporting Pulse" subtitle={`Report delivery · ${rangeLabel}`} delay={delay} bodyClassName="flex flex-col">
+    <div className="pt-2">
+      <AnimatedNumber value={data.sent} format={formatNumber} className="block text-[72px]" testId="pulse-sent-value" />
+      <div className="mt-3 flex items-center gap-3">
+        <TrendPill value={data.sentDelta} label=" vs previous" testId="pulse-sent-delta" />
+      </div>
+      <p className="mt-1 text-[13px] fx-subtle">reports delivered to clients</p>
     </div>
 
-    <ul className="mt-6 space-y-1">
-      {data.rows.map((row) => (
-        <li key={row.id}>
-          <Link to={row.href} data-testid={`pulse-row-${row.id}`} className="group block rounded-xl px-2 py-2.5 -mx-2 transition-colors hover:bg-[var(--app-inset)]">
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-[13px] font-medium">{row.label}</span>
-              <span className="flex items-center gap-1">
-                <span className="fx-num text-[15px] font-semibold">{row.value}</span>
-                <ChevronRight className="h-4 w-4 text-[var(--app-subtle)] transition-transform group-hover:translate-x-0.5" />
-              </span>
-            </div>
-            <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[var(--app-inset)]">
-              <div className="h-full rounded-full fx-stripes transition-[width] duration-300" style={{ width: `${Math.max(row.share * 100, row.value ? 6 : 0)}%`, color: TONES[row.tone].hex }} />
-            </div>
-            <p className="mt-1.5 text-xs fx-subtle">{row.context}</p>
-          </Link>
-        </li>
-      ))}
+    <ul className="mt-auto space-y-1 pt-6">
+      {data.rows.map((row, i) => {
+        const pct = Math.round(row.share * 100);
+        const color = TONES[row.tone].hex;
+        return (
+          <li key={row.id}>
+            <Link to={row.href} data-testid={`pulse-row-${row.id}`} className="group -mx-3 block rounded-[16px] px-3 py-2.5 transition-colors duration-200 hover:bg-[#F7F6F3]">
+              <div className="flex items-center justify-between gap-2 text-[14px]">
+                <span className="flex items-center gap-1">{row.label}<ChevronRight className="h-3.5 w-3.5 text-[var(--app-subtle)] opacity-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:opacity-100" /></span>
+                <span className="fx-num"><b className="font-semibold">{row.value}</b> <span style={{ color }}>· {pct}%</span></span>
+              </div>
+              <div className="mt-2 h-[7px] w-full overflow-hidden rounded-full bg-[#EFEEEA]">
+                <div className="fx-grow-x h-full rounded-full" style={{ width: `${Math.max(pct, row.value ? 5 : 0)}%`, background: color, "--fx-delay": `${200 + i * 120}ms` }} />
+              </div>
+              <p className="mt-1.5 text-xs fx-subtle">{row.context}</p>
+            </Link>
+          </li>
+        );
+      })}
     </ul>
   </WidgetCard>
 );

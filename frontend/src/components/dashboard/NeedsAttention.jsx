@@ -9,10 +9,10 @@ import { formatRelative } from "@/lib/format";
 const VISIBLE = 4;
 
 /** Prioritised issues list with a direct action per row (design.md §5.6). */
-export const NeedsAttention = ({ items }) => {
+export const NeedsAttention = ({ items, delay }) => {
   const navigate = useNavigate();
   return (
-    <WidgetCard testId="needs-attention" title="Needs Your Attention" subtitle={`${items.length} open items`}
+    <WidgetCard testId="needs-attention" title="Needs Your Attention" subtitle={`${items.length} open items`} delay={delay}
       menu={[{ label: "View all reports", onSelect: () => navigate("/reports") }, { label: "Open connections", onSelect: () => navigate("/settings?section=connections") }]}>
       {items.length === 0 ? (
         <EmptyState icon={CheckCircle2} title="Everything is running smoothly" description="All connections are syncing and no reports need review." />
@@ -21,7 +21,7 @@ export const NeedsAttention = ({ items }) => {
           <ul className="-mx-2 divide-y divide-[var(--app-border)]">
             {items.slice(0, VISIBLE).map((item) => (
               <li key={item.id}>
-                <Link to={item.href} data-testid={`attention-item-${item.id}`} className="group flex items-center gap-3 rounded-xl px-2 py-3 transition-colors hover:bg-[var(--app-inset)]">
+                <Link to={item.href} data-testid={`attention-item-${item.id}`} className="group flex items-center gap-3 rounded-[16px] px-2 py-3 transition-all duration-200 hover:bg-[#F7F6F3] hover:pl-3">
                   <ClientAvatar name={item.clientName} size={34} />
                   <span className="min-w-0 flex-1">
                     <span className="flex items-center gap-2">

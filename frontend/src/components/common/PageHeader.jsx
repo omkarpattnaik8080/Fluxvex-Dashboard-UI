@@ -1,5 +1,7 @@
 import { FlaskConical } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AnimatedNumber } from "@/components/common/DataViz";
+import { formatNumber } from "@/lib/format";
 
 /** Page title block (design.md §5.2 / §6.1). */
 export const PageHeader = ({ title, description, actions, badge, className }) => (
@@ -28,26 +30,31 @@ export const SampleDataBadge = () => (
   </span>
 );
 
-/** Low-profile summary metric (Clients / Reports pages). */
-export const SummaryCard = ({ label, value, hint, icon: Icon, tone, active, onClick, testId }) => {
+/** Summary metric card (reference "Active shoppers" style): label, big count-up number, hint. */
+export const SummaryCard = ({ label, value, hint, icon: Icon, tone, active, onClick, testId, delay = 0 }) => {
   const Comp = onClick ? "button" : "div";
   return (
     <Comp
       type={onClick ? "button" : undefined}
       onClick={onClick}
       data-testid={testId}
+      style={{ "--fx-delay": `${delay}ms` }}
       className={cn(
-        "fx-card flex flex-col gap-2 p-5 text-left transition-colors duration-200",
-        onClick && "hover:border-[var(--app-accent-soft)]",
-        active && "border-[var(--app-accent)] bg-[var(--app-accent-wash)]",
+        "fx-card fx-rise group flex flex-col gap-5 p-6 text-left",
+        onClick && "fx-lift",
+        active && "!border-[var(--app-accent)] ring-4 ring-[var(--app-accent-wash)]",
       )}
     >
-      <span className="flex items-center gap-2 text-[13px] fx-muted">
-        {Icon && <Icon className="h-4 w-4" style={{ color: tone }} />}
+      <span className="flex items-center justify-between gap-2 text-[14px] fx-muted">
         {label}
+        {Icon && (
+          <span className="flex h-8 w-8 items-center justify-center rounded-full transition-transform duration-300 group-hover:scale-110" style={{ color: tone, background: "#F5F4F0" }}>
+            <Icon className="h-4 w-4" />
+          </span>
+        )}
       </span>
-      <span className="fx-num text-[28px] font-semibold leading-none">{value}</span>
-      {hint && <span className="text-xs fx-subtle">{hint}</span>}
+      {typeof value === "number" ? <AnimatedNumber value={value} format={formatNumber} className="text-[44px]" /> : <span className="fx-display text-[44px]">{value}</span>}
+      {hint && <span className="-mt-3 text-xs fx-subtle">{hint}</span>}
     </Comp>
   );
 };

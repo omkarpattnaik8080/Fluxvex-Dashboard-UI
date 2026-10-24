@@ -52,13 +52,13 @@ export default function ClientsPage() {
         </>} />
 
       <div className="mb-5 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
-        {cards.map((c) => (
-          <SummaryCard key={c.id} testId={`client-summary-${c.id}`} label={c.label} value={c.value ?? "—"} icon={c.icon} tone={c.tone}
+        {cards.map((c, i) => (
+          <SummaryCard key={c.id} delay={i * 60} testId={`client-summary-${c.id}`} label={c.label} value={c.value ?? "—"} icon={c.icon} tone={c.tone}
             active={c.filter && c.filter !== "all" && status === c.filter} onClick={c.filter ? () => setParam("status", c.filter) : undefined} />
         ))}
       </div>
 
-      <section className="fx-card overflow-hidden">
+      <section className="fx-card fx-rise overflow-hidden" style={{ "--fx-delay": "300ms" }}>
         <div className="flex flex-wrap items-center gap-2 border-b border-[var(--app-border)] p-4">
           <div className="relative min-w-[220px] flex-1 md:max-w-sm">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 fx-subtle" />

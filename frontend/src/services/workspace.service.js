@@ -14,6 +14,8 @@ export const notificationsService = {
   list: () => request(() => mock.listNotifications(), { url: ENDPOINTS.notifications.list }),
   markAllRead: () => request(() => mock.markAllNotificationsRead(), { method: "post", url: ENDPOINTS.notifications.readAll }),
   markRead: (id) => request(() => mock.markNotificationRead(id), { method: "post", url: `${ENDPOINTS.notifications.list}/${id}/read` }),
+  archive: (id) => request(() => mock.archiveNotification(id), { method: "post", url: `${ENDPOINTS.notifications.list}/${id}/archive` }),
+  act: ({ id, actionId }) => request(() => mock.runNotificationAction(id, actionId), { method: "post", url: `${ENDPOINTS.notifications.list}/${id}/actions/${actionId}` }),
 };
 
 /** Settings & connections — mirrors NestJS `SettingsController` / `ConnectionsController`. */

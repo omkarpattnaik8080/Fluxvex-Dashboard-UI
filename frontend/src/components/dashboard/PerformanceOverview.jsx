@@ -12,7 +12,7 @@ import { formatDateRange, formatRelative } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 /** Dominant analytics card — KPI strip, chart, legend and explore bar (design.md §5.4). */
-export const PerformanceOverview = ({ data, filters, onRefresh }) => {
+export const PerformanceOverview = ({ data, filters, onRefresh, delay }) => {
   const [metric, setMetric] = useState("spend");
   const [series, setSeries] = useState({ current: true, previous: true });
   const [asTable, setAsTable] = useState(false);
@@ -24,7 +24,7 @@ export const PerformanceOverview = ({ data, filters, onRefresh }) => {
   ];
 
   return (
-    <WidgetCard testId="performance-overview" title="Performance Overview" menu={menu}
+    <WidgetCard testId="performance-overview" title="Performance Overview" menu={menu} delay={delay}
       subtitle={`${formatDateRange(data.range.start, data.range.end)} · ${data.accountCount} connected accounts · synced ${formatRelative(data.lastSyncAt)}`}>
       {data.accountCount === 0 ? (
         <EmptyState icon={PlugZap} title="No performance data for this scope" testId="performance-empty"
@@ -57,7 +57,7 @@ const MissingDataNote = ({ missing }) => (
 const Legend = ({ metric, series, onToggle, compare }) => (
   <div className="flex flex-wrap items-center gap-2 text-xs" aria-label="Chart series">
     <LegendItem active={series.current} onClick={() => onToggle("current")} testId="legend-current">
-      <span className="h-2.5 w-4 rounded-sm fx-stripes" style={{ color: CHART_COLORS[metric] }} /> Current period
+      <span className="h-2.5 w-4 rounded-full" style={{ background: CHART_COLORS[metric] }} /> Current period
     </LegendItem>
     {compare && (
       <LegendItem active={series.previous} onClick={() => onToggle("previous")} testId="legend-previous">
@@ -69,7 +69,7 @@ const Legend = ({ metric, series, onToggle, compare }) => (
 
 const LegendItem = ({ active, onClick, children, testId }) => (
   <button type="button" onClick={onClick} aria-pressed={active} data-testid={testId}
-    className={cn("flex h-7 items-center gap-2 rounded-lg border border-[var(--app-border)] px-2.5 font-medium transition-opacity", !active && "opacity-45")}>
+    className={cn("flex h-8 items-center gap-2 rounded-full border border-[var(--app-border)] px-2.5 font-medium transition-opacity", !active && "opacity-45")}>
     {children}
   </button>
 );

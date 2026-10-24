@@ -5,6 +5,7 @@ import { SettingsPanel, ToggleRow } from "@/components/settings/SettingsLayout";
 import { useWorkspaceMutation } from "@/hooks/queries/useWorkspaceData";
 import { settingsService } from "@/services/workspace.service";
 import { formatDate } from "@/lib/format";
+import { Rings } from "@/components/common/DataViz";
 
 /** Saves one settings section; toggles re-render from the server response, so rejected changes snap back. */
 const useSectionSave = (section, success = "Settings saved") =>
@@ -71,14 +72,20 @@ export const UsageSection = ({ settings }) => {
   const save = useSectionSave("alerts", "Alert preference saved");
   return (
     <SettingsPanel testId="settings-usage" title="Usage & Alerts" description={`Your plan usage resets on ${formatDate(u.resetsAt)}.`}>
-      <div className="grid gap-3 sm:grid-cols-2">
-        {[["Clients", u.clients], ["Reports this month", u.reports]].map(([label, m]) => {
+      <div className="grid gap-4 sm:grid-cols-2">
+        {[["Clients", u.clients, "#3D43E8"], ["Reports this month", u.reports, "#FF9F2E"]].map(([label, m, color]) => {
           const pct = (m.used / m.limit) * 100;
           return (
-            <div key={label} className="rounded-xl border border-[var(--app-border)] p-4" data-testid={`usage-${label.split(" ")[0].toLowerCase()}`}>
-              <div className="flex justify-between text-[13px]"><span className="font-medium">{label}</span><span className="fx-num">{m.used} / {m.limit}</span></div>
-              <div className="mt-2 h-2 rounded-full bg-[var(--app-inset)]"><div className="h-full rounded-full" style={{ width: `${pct}%`, background: pct > 85 ? "var(--app-warning)" : "var(--app-accent)" }} /></div>
-              <p className="mt-1.5 text-xs fx-subtle">{pct > 85 ? "Nearing your limit — new items will pause at the limit." : `${(100 - pct).toFixed(0)}% remaining`}</p>
+            <div key={label} className="flex flex-col items-center rounded-[20px] border border-[var(--app-border)] p-5" data-testid={`usage-${label.split(" ")[0].toLowerCase()}`}>
+              <p className="self-start text-[15px] font-medium">{label}</p>
+              <div className="my-4"><Rings rings={[{ value: pct / 100, color: pct > 85 ? "#C77812" : color }]} size={150} stroke={12}>
+                <span className="fx-display text-[30px]">{m.used}</span><span className="text-xs fx-subtle">of {m.limit}</span>
+              </Rings></div>
+              <div className="flex gap-4 text-xs fx-muted">
+                <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full" style={{ background: color }} />Used: {m.used}</span>
+                <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#E7E5DE]" />Available: {m.limit - m.used}</span>
+              </div>
+              {pct > 85 && <p className="mt-2 text-xs text-[var(--app-warning)]">Nearing your limit — new items pause at the limit.</p>}
             </div>
           );
         })}

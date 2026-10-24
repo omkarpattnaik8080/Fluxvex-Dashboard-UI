@@ -22,7 +22,7 @@ export const ExploreAssistant = ({ filters }) => {
   };
 
   return (
-    <div className="overflow-hidden rounded-xl border border-[var(--app-border)] bg-[var(--app-accent-wash)]" data-testid="explore-assistant">
+    <div className="overflow-hidden rounded-[20px] border border-[var(--app-border)] bg-[var(--app-accent-wash)]" data-testid="explore-assistant">
       <button type="button" onClick={() => setOpen((v) => !v)} className="flex w-full items-center gap-2 px-4 py-2.5 text-[13px] font-medium" data-testid="explore-toggle" aria-expanded={open}>
         <Sparkles className="h-4 w-4 text-[var(--app-accent)]" />
         What would you like to explore next?

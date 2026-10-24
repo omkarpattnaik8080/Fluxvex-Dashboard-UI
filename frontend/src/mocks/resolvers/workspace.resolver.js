@@ -33,6 +33,25 @@ export function markNotificationRead(id) {
   if (n) n.read = true;
   return db.notifications;
 }
+export function archiveNotification(id) {
+  const n = db.notifications.find((x) => x.id === id) ?? httpError("Notification not found");
+  Object.assign(n, { archived: true, read: true });
+  return db.notifications;
+}
+
+/** Runs an inline notification action against the real workspace state. */
+export function runNotificationAction(id, actionId) {
+  const n = db.notifications.find((x) => x.id === id) ?? httpError("Notification not found");
+  const action = n.actions?.find((a) => a.id === actionId) ?? httpError("Action not available");
+  const user = action.userId && db.settings.users.find((u) => u.id === action.userId);
+  if (actionId === "accept") { if (!user) httpError("This invitation no longer exists"); user.state = "active"; n.resolution = "Access granted"; }
+  if (actionId === "decline") { db.settings.users = db.settings.users.filter((u) => u.id !== action.userId); n.resolution = "Request declined"; }
+  if (actionId === "reconnect") { reconnectConnection(action.connectionId); n.resolution = "Reconnected"; }
+  if (actionId === "dismiss") { n.archived = true; n.resolution = "Dismissed"; }
+  n.read = true;
+  n.actions = [];
+  return n;
+}
 
 /* ---------- Settings ---------- */
 export const getSettings = () => db.settings;

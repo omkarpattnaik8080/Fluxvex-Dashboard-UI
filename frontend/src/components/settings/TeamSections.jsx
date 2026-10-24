@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { StatusBadge } from "@/components/common/StatusBadge";
-import { ClientAvatar } from "@/components/common/ClientAvatar";
+import { PersonAvatar } from "@/components/common/DataViz";
 import { ConfirmDialog, inputCls } from "@/components/common/FormControls";
 import { EmptyState } from "@/components/common/States";
 import { SettingsPanel } from "@/components/settings/SettingsLayout";
@@ -63,7 +63,7 @@ export const UsersSection = ({ settings }) => {
         <ul className="divide-y divide-[var(--app-border)]">
           {settings.users.map((u) => (
             <li key={u.id} className="flex flex-wrap items-center gap-3 py-3" data-testid={`member-row-${u.id}`}>
-              <ClientAvatar name={u.name || u.email} size={32} />
+              <PersonAvatar person={{ name: u.name || u.email, avatarUrl: u.avatarUrl }} size={36} />
               <div className="min-w-0 flex-1"><p className="truncate text-[13px] font-medium">{u.name || u.email}</p><p className="truncate text-xs fx-subtle">{u.email}</p></div>
               <span className="text-[13px] fx-muted">{u.role}</span>
               <StatusBadge status={u.state} />

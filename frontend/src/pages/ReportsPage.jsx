@@ -46,14 +46,14 @@ export default function ReportsPage() {
         actions={<Button className="h-10 rounded-[10px]" onClick={() => setCreating(true)} data-testid="create-report-button"><Plus className="mr-2 h-4 w-4" />Create report</Button>} />
 
       <div className="mb-5 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
-        {cards.map((c) => (
-          <SummaryCard key={c.id} testId={`report-summary-${c.id}`} label={c.label} icon={c.icon} tone={c.tone}
+        {cards.map((c, i) => (
+          <SummaryCard key={c.id} delay={i * 60} testId={`report-summary-${c.id}`} label={c.label} icon={c.icon} tone={c.tone}
             value={summary ? summary[c.valueKey ?? c.id] : "—"} hint={c.id === "all" && summary ? `${summary.scheduled} scheduled` : undefined}
             active={status === c.id && c.id !== "all"} onClick={() => setParam("status", c.id)} />
         ))}
       </div>
 
-      <section className="fx-card overflow-hidden">
+      <section className="fx-card fx-rise overflow-hidden" style={{ "--fx-delay": "300ms" }}>
         <div role="tablist" aria-label="Report status" className="flex gap-1 overflow-x-auto border-b border-[var(--app-border)] px-4 pt-3">
           {REPORT_TABS.map((t) => {
             const count = summary ? (t.id === "all" ? summary.total : summary[t.id]) : null;

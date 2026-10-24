@@ -12,6 +12,14 @@ export const CURRENT_USER = {
   role: "Admin",
   identityProvider: "Google",
   initials: "MP",
+  avatarUrl: "/avatars/maya.jpg",
+  plan: "Pro",
+};
+
+/** People referenced by notifications & team settings. */
+export const PEOPLE = {
+  leo: { name: "Leo Brandt", avatarUrl: "/avatars/leo.jpg", online: true },
+  sana: { name: "Sana Okafor", avatarUrl: "/avatars/sana.jpg", online: true },
 };
 
 const conn = (id, provider, accountName, status, syncedDaysAgo = 0) => ({
@@ -122,21 +130,30 @@ export const TEMPLATES = [
   { id: "tpl_6", name: "Local Lead Generation", description: "Calls, form fills and cost per lead for local businesses.", category: "Monthly", providers: ["google_ads", "ga4"], sections: 5, pages: 4, layout: "kpi", updatedAt: daysFromNow(-41) },
 ];
 
+/**
+ * Activity feed. `category` drives the Inbox / General tabs, `actions` render inline
+ * buttons that call real workspace mutations (accept invite, reconnect, …).
+ */
 export const NOTIFICATIONS = [
-  { id: "nt_1", kind: "danger", title: "Connection expired", detail: "Bloom Botanics — Google Ads needs to be reconnected.", createdAt: daysFromNow(0, -2), read: false, href: "/settings?section=connections" },
-  { id: "nt_2", kind: "danger", title: "Report run failed", detail: "Copperleaf Dental — Monthly Review could not be delivered.", createdAt: daysFromNow(0, -5), read: false, href: "/reports?status=failed" },
-  { id: "nt_3", kind: "warning", title: "Email domain not verified", detail: "Verify northwind.agency to enable white-label sending.", createdAt: daysFromNow(-1), read: false, href: "/settings?section=email" },
-  { id: "nt_4", kind: "info", title: "3 reports awaiting review", detail: "Weekly reports were generated this morning.", createdAt: daysFromNow(0, -6), read: true, href: "/reports?status=needs_review" },
-  { id: "nt_5", kind: "success", title: "Report sent", detail: "Harbor Pet Clinic — Weekly Performance was delivered.", createdAt: daysFromNow(-1, -3), read: true, href: "/reports?status=sent" },
+  { id: "nt_1", category: "inbox", actor: PEOPLE.leo, verb: "approved", target: "Acme Outdoor — Monthly Review", context: "Acme Outdoor", createdAt: daysFromNow(0, -1), read: false, archived: false, href: "/reports?q=RPT-1041" },
+  { id: "nt_2", category: "inbox", system: "danger", verb: "Google Ads connection expired for", target: "Bloom Botanics", context: "Connections", createdAt: daysFromNow(0, -2), read: false, archived: false, href: "/settings?section=connections",
+    actions: [{ id: "dismiss", label: "Dismiss" }, { id: "reconnect", label: "Reconnect", primary: true, connectionId: "cn_4" }] },
+  { id: "nt_3", category: "inbox", actor: PEOPLE.sana, verb: "requested access to", target: "Northwind workspace", context: "Viewer role", createdAt: daysFromNow(0, -3), read: false, archived: false, href: "/settings?section=users",
+    actions: [{ id: "decline", label: "Decline", userId: "usr_3" }, { id: "accept", label: "Accept", primary: true, userId: "usr_3" }] },
+  { id: "nt_4", category: "inbox", actor: PEOPLE.leo, verb: "generated", target: "Driftwood Coffee — Weekly", suffix: "for review", context: "Driftwood Coffee", createdAt: daysFromNow(0, -5), read: true, archived: false, href: "/reports?q=RPT-1047", attachment: "RPT-1047_driftwood_weekly.pdf" },
+  { id: "nt_5", category: "general", system: "danger", verb: "Report delivery failed for", target: "Copperleaf Dental", context: "Recipient mailbox rejected", createdAt: daysFromNow(0, -6), read: false, archived: false, href: "/reports?status=failed" },
+  { id: "nt_6", category: "general", system: "warning", verb: "Email domain not verified —", target: "northwind.agency", context: "Email settings", createdAt: daysFromNow(-1), read: true, archived: false, href: "/settings?section=email" },
+  { id: "nt_7", category: "general", system: "success", verb: "Report sent to", target: "Harbor Pet Clinic", context: "Weekly Performance", createdAt: daysFromNow(-1, -3), read: true, archived: false, href: "/reports?status=sent" },
+  { id: "nt_8", category: "general", system: "info", verb: "3 weekly reports are scheduled for", target: "next Monday", context: "Automations", createdAt: daysFromNow(-2), read: true, archived: true, href: "/reports?status=scheduled" },
 ];
 
 export const SETTINGS = {
   agency: { name: "Northwind Digital", website: "https://northwind.agency", timezone: "Europe/London", dateFormat: "DD MMM YYYY", currency: "USD", language: "English", brandColor: "#3D43E8", logoName: null },
   security: { identityProvider: "Google", email: CURRENT_USER.email, connected: true, lastSignInAt: daysFromNow(0, -1), sessions: 2 },
   users: [
-    { id: "usr_1", email: CURRENT_USER.email, name: CURRENT_USER.name, role: "Admin", state: "active" },
-    { id: "usr_2", email: "leo@northwind.agency", name: "Leo Brandt", role: "Editor", state: "active" },
-    { id: "usr_3", email: "sana@northwind.agency", name: "", role: "Viewer", state: "pending" },
+    { id: "usr_1", email: CURRENT_USER.email, name: CURRENT_USER.name, role: "Admin", state: "active", avatarUrl: CURRENT_USER.avatarUrl },
+    { id: "usr_2", email: "leo@northwind.agency", name: "Leo Brandt", role: "Editor", state: "active", avatarUrl: PEOPLE.leo.avatarUrl },
+    { id: "usr_3", email: "sana@northwind.agency", name: "Sana Okafor", role: "Viewer", state: "pending", avatarUrl: PEOPLE.sana.avatarUrl },
   ],
   destinations: { email: true, googleDrive: false, downloadOnly: true, defaultDestination: "email", googleDriveConnected: false },
   governance: { requireApproval: true, allowEditorsToSend: false, autoArchive: true },

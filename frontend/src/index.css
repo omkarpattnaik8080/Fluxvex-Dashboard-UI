@@ -16,7 +16,7 @@
   --ink: #101014;
 
   /* App aliases */
-  --app-canvas: var(--surface);
+  --app-canvas: #f3f2ee;
   --app-card: var(--bg);
   --app-inset: var(--elevated);
   --app-border: var(--line);
@@ -36,6 +36,10 @@
   --app-info: #2f6feb;
   --app-info-wash: #eaf1ff;
   --app-shadow-pop: 0 12px 36px rgba(16, 16, 20, 0.08);
+  --app-shadow-card: 0 1px 2px rgba(16, 16, 20, 0.03), 0 4px 14px rgba(16, 16, 20, 0.025);
+  --app-shadow-lift: 0 2px 4px rgba(16, 16, 20, 0.03), 0 22px 44px -12px rgba(16, 16, 20, 0.12);
+  --app-shadow-menu: 0 1px 2px rgba(16, 16, 20, 0.04), 0 28px 64px -16px rgba(16, 16, 20, 0.22);
+  --app-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 /* shadcn/ui variables mapped onto the Fluxvex palette */
@@ -96,8 +100,30 @@
 @layer components {
   .fx-card {
     background: var(--app-card);
-    border: 1px solid var(--app-border);
-    border-radius: 16px;
+    border: 1px solid rgba(231, 229, 222, 0.7);
+    border-radius: 24px;
+    box-shadow: var(--app-shadow-card);
+  }
+  /* Hover lift for interactive cards */
+  .fx-lift {
+    transition: transform 320ms var(--app-ease), box-shadow 320ms var(--app-ease), border-color 320ms var(--app-ease);
+  }
+  .fx-lift:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--app-shadow-lift);
+    border-color: rgba(123, 127, 255, 0.28);
+  }
+  /* Large display numerals (reference cards) */
+  .fx-display {
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+    letter-spacing: -0.045em;
+    line-height: 0.95;
+  }
+  .fx-menu {
+    border-radius: 24px;
+    border: 1px solid rgba(231, 229, 222, 0.8);
+    box-shadow: var(--app-shadow-menu);
   }
   .fx-inset {
     background: var(--app-inset);
@@ -136,7 +162,44 @@
   }
 }
 .fx-rise {
-  animation: fx-rise 220ms ease-out both;
+  animation: fx-rise 520ms var(--app-ease) both;
+  animation-delay: var(--fx-delay, 0ms);
+}
+
+/* Bars grow from their baseline; progress tracks fill from the left */
+@keyframes fx-grow-y {
+  from { transform: scaleY(0); }
+}
+@keyframes fx-grow-x {
+  from { transform: scaleX(0); }
+}
+.fx-grow-y {
+  transform-origin: bottom;
+  animation: fx-grow-y 820ms var(--app-ease) both;
+  animation-delay: var(--fx-delay, 0ms);
+}
+.fx-grow-x {
+  transform-origin: left;
+  animation: fx-grow-x 900ms var(--app-ease) both;
+  animation-delay: var(--fx-delay, 0ms);
+}
+
+/* Slow float for decorative shapes */
+@keyframes fx-float {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(-6px, 6px) rotate(-3deg); }
+}
+.fx-float {
+  animation: fx-float 7s ease-in-out infinite;
+}
+
+/* Live pulse for unread / online dots */
+@keyframes fx-ping {
+  0% { box-shadow: 0 0 0 0 rgba(61, 67, 232, 0.45); }
+  100% { box-shadow: 0 0 0 7px rgba(61, 67, 232, 0); }
+}
+.fx-ping {
+  animation: fx-ping 1.8s ease-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
